@@ -13,12 +13,13 @@ namespace App_for_handling_orders
         {
             HandleInput handleInput = new HandleInput();
             ProgramOutput programOutput = new ProgramOutput();
+            List<Request> memoryDB;
 
             programOutput.Greetings();
-            string[] filesToRead = handleInput.readFiles(); // example D:\Users\MarkG\source\repos\test1.csv;
-            handleInput.ParseFiles(filesToRead);
+            string[] filesToRead = handleInput.readFiles(); // example D:\Users\MarkG\source\repos\test1.csv
+            memoryDB = handleInput.ParseFiles(filesToRead);
             programOutput.ReportList();
-            handleInput.ReadRaport();
+            handleInput.ReadRaport(memoryDB);
             Console.Read();
 
         }

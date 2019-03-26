@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace App_for_handling_orders
 {
-    class Request
+    public class Request
     {
-        private string name;
-        private string quantity;
-        private double price;
-        private string clientId;
-        private long requestId;
+        public string name { get; }
+        public int quantity { get; }
+        public double price { get; }
+        public string clientId { get; }
+        public long requestId { get; }
 
 
 
-        public Request(string clientId, long requestId, string name, string quantity, double price) 
+        public Request(string clientId, long requestId, string name, int quantity, double price) 
         {
             this.clientId = clientId;
             this.requestId = requestId;

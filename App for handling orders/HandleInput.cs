@@ -29,7 +29,8 @@ namespace App_for_handling_orders
                     switch(format)
                     {
                         case "csv":
-                            result.Concat( CSVParse(file));
+                            //result.Concat( CSVParse(file));
+                            result.AddRange(CSVParse(file));
                             break;
 
                         case "xml":
@@ -53,34 +54,65 @@ namespace App_for_handling_orders
             return result;
         }
 
-        internal void ReadRaport()
+        internal void ReadRaport(List<Request> memoryDB)
         {
-            string letter = Console.ReadLine();
-
-            switch (letter)
+            ReportController reportController = new ReportController(memoryDB);
+            ProgramOutput programOutput = new ProgramOutput(memoryDB);
+            string id;
+            while (true)
             {
-                case "a":
-                    break;
-                case "b":
-                    break;
-                case "c":
-                    break;
-                case "d":
-                    break;
-                case "e":
-                    break;
-                case "f":
-                    break;
-                case "g":
-                    break;
-                case "h":
-                    break;
-                case "i":
-                    break;
-                case "j":
-                    break;
-                case "k":
-                    break;
+                string letter = Console.ReadLine();
+
+                switch (letter)
+                {
+                    case "a":
+                        Console.WriteLine(reportController.RequestQuantity());
+                        break;
+                    case "b":
+                        Console.WriteLine("Podaj id klienta");
+                        id = Console.ReadLine();
+                        Console.WriteLine(reportController.ClientRequestQuantity(id));
+                        break;
+                    case "c":
+                        Console.WriteLine(reportController.SumOfRequests());
+                        break;
+                    case "d":
+                        Console.WriteLine("Podaj id klienta");
+                        id = Console.ReadLine();
+                        Console.WriteLine(reportController.SumOfClientRequests(id));
+                        break;
+                    case "e":
+                        programOutput.RequestList();
+                        break;
+                    case "f":
+                        Console.WriteLine("Podaj id klienta");
+                        id = Console.ReadLine();
+                        programOutput.ClientRequestList(id);
+                        break;
+                    case "g":
+                        Console.WriteLine(reportController.AverageWorth());
+                        break;
+                    case "h":
+                        Console.WriteLine("Podaj id klienta");
+                        id = Console.ReadLine();
+                        Console.WriteLine(reportController.AverageClientWorth(id));
+                        break;
+                    case "i":
+                        reportController.QuantityByName();
+                        break;
+                    case "j":
+                        Console.WriteLine("Podaj id klienta");
+                        id = Console.ReadLine();
+                        reportController.ClientQuantityByName(id);
+                        break;
+                    case "k":
+                        Console.WriteLine("Najniższa cena");
+                        double bottom = Double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+                        Console.WriteLine("Najwyższa cena");
+                        double top = Double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+                        reportController.RequestInSection(bottom, top);
+                        break;
+                }
             }
 
         }
@@ -113,7 +145,7 @@ namespace App_for_handling_orders
                         string ClientId = fields[0];
                         long RequestId = long.Parse(fields[1]);
                         string Name = fields[2];
-                        string Quantity = fields[3];
+                        int Quantity = int.Parse(fields[3]);
                         double Price = Double.Parse(fields[4], CultureInfo.InvariantCulture);
                         Request request = new Request(ClientId, RequestId, Name, Quantity, Price);
                         result.Add(request);
