@@ -5,6 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic.FileIO;
 using System.Globalization;
+using System.Xml;
+using System.Xml.Linq;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace App_for_handling_orders
 {
@@ -29,16 +34,15 @@ namespace App_for_handling_orders
                     switch(format)
                     {
                         case "csv":
-                            //result.Concat( CSVParse(file));
                             result.AddRange(CSVParse(file));
                             break;
 
                         case "xml":
-                           // result.Add(XMLParse(file));
+                            result.AddRange(XMLParse(file));
                             break;
 
                         case "json":
-                          //  result.Add(JSONParse(file));
+                            result.AddRange(JSONParse(file));
                             break;
 
                         default:
@@ -119,12 +123,53 @@ namespace App_for_handling_orders
 
         private List<Request> JSONParse(string file)
         {
-            throw new NotImplementedException();
+            List<Request> result = new List<Request>();
+            
+            using (StreamReader r = new StreamReader(file))
+            {
+                string json = r.ReadToEnd();
+                byte[] byteArray = Encoding.UTF8.GetBytes(json);
+                //byte[] byteArray = Encoding.ASCII.GetBytes(contents);
+                MemoryStream stream = new MemoryStream(byteArray);
+                // convert stream to string
+
+                JsonSerializer se = new JsonSerializer();
+
+                StreamReader re = new StreamReader(stream);
+                JsonTextReader reader = new JsonTextReader(re);
+                var DeserializedObject = se.Deserialize<Request>(reader);
+
+                Console.WriteLine(DeserializedObject.clientId);
+                //result = JsonConvert.DeserializeObject<List<Request>>(json);
+            }
+
+            return result;
         }
 
         private List<Request> XMLParse(string file)
         {
-            throw new NotImplementedException();
+            List<Request> result = new List<Request>();
+            XDocument doc = XDocument.Load(file);
+
+            foreach (XElement el in doc.Root.Elements())
+            {
+                try
+                {
+                    string ClientId = el.Element("clientId").Value;
+                    long RequestId = long.Parse(el.Element("requestId").Value);
+                    string Name = el.Element("name").Value;
+                    int Quantity = int.Parse(el.Element("quantity").Value);
+                    double Price = Double.Parse(el.Element("price").Value, CultureInfo.InvariantCulture);
+                    Request request = new Request(ClientId, RequestId, Name, Quantity, Price);
+                    result.Add(request);
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Błąd w formacie danych w pliku " + e);
+                }
+            }
+            return result;
         }
 
         private List<Request> CSVParse(string file)

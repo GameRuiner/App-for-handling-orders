@@ -17,7 +17,8 @@ namespace App_for_handling_orders
 
             programOutput.Greetings();
             string[] filesToRead = handleInput.readFiles(); // example D:\Users\MarkG\source\repos\test1.csv
-            memoryDB = handleInput.ParseFiles(filesToRead);
+            memoryDB = handleInput.ParseFiles(filesToRead); // D:\Users\MarkG\source\repos\test2.xml
+                                                            // D:\Users\MarkG\source\repos\test3.json
             programOutput.ReportList();
             handleInput.ReadRaport(memoryDB);
             Console.Read();
