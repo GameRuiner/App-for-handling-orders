@@ -65,6 +65,7 @@ namespace App_for_handling_orders
             ReportController reportController = new ReportController(memoryDB);
             ProgramOutput programOutput = new ProgramOutput(memoryDB);
             string id;
+            string sort = "clientId";
             while (true)
             {
                 string letter = Console.ReadLine();
@@ -88,11 +89,13 @@ namespace App_for_handling_orders
                         Console.WriteLine(reportController.SumOfClientRequests(id));
                         break;
                     case "e":
+                        programOutput.memoryDB = reportController.Sort(sort);
                         programOutput.RequestList();
                         break;
                     case "f":
                         Console.WriteLine("Podaj id klienta");
                         id = Console.ReadLine();
+                        programOutput.memoryDB = reportController.Sort(sort);
                         programOutput.ClientRequestList(id);
                         break;
                     case "g":
@@ -104,11 +107,13 @@ namespace App_for_handling_orders
                         Console.WriteLine(reportController.AverageClientWorth(id));
                         break;
                     case "i":
+                        reportController.Sort(sort);
                         reportController.QuantityByName();
                         break;
                     case "j":
                         Console.WriteLine("Podaj id klienta");
                         id = Console.ReadLine();
+                        reportController.Sort(sort);
                         reportController.ClientQuantityByName(id);
                         break;
                     case "k":
@@ -116,11 +121,53 @@ namespace App_for_handling_orders
                         double bottom = Double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
                         Console.WriteLine("Najwyższa cena");
                         double top = Double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+                        reportController.Sort(sort);
                         reportController.RequestInSection(bottom, top);
                         break;
+                    case "l":
+                        sort = NewSort(sort);
+                        break;
+                        
                 }
             }
 
+        }
+
+        private string NewSort(string oldsort)
+        {
+            Console.WriteLine("Wybierz odpowiednią literę");
+            Console.WriteLine("a klient Id");
+            Console.WriteLine("b zapyt Id");
+            Console.WriteLine("c nazwa");
+            Console.WriteLine("d ilość");
+            Console.WriteLine("e cena");
+            string letter = Console.ReadLine();
+
+            string result;
+
+            switch(letter)
+            {
+                case "a":
+                    result = "clientId";
+                    break;
+                case "b":
+                    result = "requestId";
+                    break;
+                case "c":
+                    result = "name";
+                    break;
+                case "d":
+                    result = "quantity";
+                    break;
+                case "e":
+                    result = "price";
+                    break;
+                default:
+                    result = oldsort;
+                    break;
+            }
+
+            return result;
         }
 
         class TempObj

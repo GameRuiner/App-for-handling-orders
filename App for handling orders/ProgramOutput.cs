@@ -6,7 +6,7 @@ namespace App_for_handling_orders
 {
     public class ProgramOutput
     {
-        public List<Request> memoryDB;
+        public List<Request> memoryDB { get;  set; }
 
         public ProgramOutput()
         {
@@ -36,6 +36,7 @@ namespace App_for_handling_orders
             Console.WriteLine("i.Ilość zamówień pogrupowanych po nazwie");
             Console.WriteLine("j. Ilość zamówień pogrupowanych po nazwie dla klienta o wskazanym identyfikatorze");
             Console.WriteLine("k. Zamówienia w podanym przedziale cenowym");
+            Console.WriteLine("l. Ustalenia sortowania ");
         }
 
         internal void RequestList()

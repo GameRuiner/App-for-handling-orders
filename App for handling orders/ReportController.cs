@@ -10,6 +10,29 @@ namespace App_for_handling_orders
     {
         List<Request> memoryDB;
 
+        public List<Request> Sort(string sort)
+        {
+            switch(sort)
+            {
+                case "clientId":
+                    memoryDB = memoryDB.OrderBy(o => o.clientId).ToList();
+                    break;
+                case "requestId":
+                    memoryDB = memoryDB.OrderBy(o => o.requestId).ToList();
+                    break;
+                case "name":
+                    memoryDB = memoryDB.OrderBy(o => o.name).ToList();
+                    break;
+                case "quantity":
+                    memoryDB = memoryDB.OrderBy(o => o.quantity).ToList();
+                    break;
+                case "price":
+                    memoryDB = memoryDB.OrderBy(o => o.price).ToList();
+                    break;
+            }
+            return memoryDB;
+        }
+
         public ReportController(List<Request> memoryDB)
         {
             this.memoryDB = memoryDB;
