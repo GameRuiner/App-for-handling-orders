@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualBasic.FileIO;
 using System.Globalization;
-using System.Xml;
 using System.Xml.Linq;
 using System.IO;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Runtime.Serialization;
 
 
 namespace App_for_handling_orders
 {
-    class HandleInput
+    public class HandleInput
     {
         public string[] readFiles()
         {
@@ -175,29 +170,35 @@ namespace App_for_handling_orders
             List<Request> requests { get; set; }
         }
 
-        private List<Request> JSONParse(string file)
+        public List<Request> JSONParse(string file)
         {
             List<Request> result = new List<Request>();
-   
-            using (StreamReader r = new StreamReader(file))
+            try
             {
-                string json = r.ReadToEnd();
-
-                TempObj tempObj = new TempObj();
-
-                JObject jObject = JObject.Parse(json);
-                IList<JToken> results = jObject["requests"].Children().ToList();
-                foreach (JToken jResult in results)
+                using (StreamReader r = new StreamReader(file))
                 {
-                    Request request = jResult.ToObject<Request>();
-                    result.Add(request);
+                    string json = r.ReadToEnd();
+
+                    TempObj tempObj = new TempObj();
+
+                    JObject jObject = JObject.Parse(json);
+                    IList<JToken> results = jObject["requests"].Children().ToList();
+                    foreach (JToken jResult in results)
+                    {
+                        Request request = jResult.ToObject<Request>();
+                        result.Add(request);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Błąd w formacie danych w pliku " + file + " " + e.Message);
             }
 
             return result;
         }
 
-        private List<Request> XMLParse(string file)
+        public List<Request> XMLParse(string file)
         {
             List<Request> result = new List<Request>();
             XDocument doc = XDocument.Load(file);
@@ -217,13 +218,13 @@ namespace App_for_handling_orders
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Błąd w formacie danych w pliku " + e);
+                    Console.WriteLine("Błąd w formacie danych w pliku " + file + " " + e.Message);
                 }
             }
             return result;
         }
 
-        private List<Request> CSVParse(string file)
+        public List<Request> CSVParse(string file)
         {
             List<Request> result = new List<Request>(); 
             TextFieldParser parser = new TextFieldParser(file);
@@ -249,7 +250,7 @@ namespace App_for_handling_orders
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Błąd w formacie danych w pliku " + e);
+                        Console.WriteLine("Błąd w formacie danych w pliku " + e.Message);
                     }
             }
             return result;
