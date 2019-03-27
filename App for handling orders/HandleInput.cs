@@ -10,6 +10,8 @@ using System.Xml.Linq;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Runtime.Serialization;
+
 
 namespace App_for_handling_orders
 {
@@ -121,26 +123,28 @@ namespace App_for_handling_orders
 
         }
 
+        class TempObj
+        {
+            List<Request> requests { get; set; }
+        }
+
         private List<Request> JSONParse(string file)
         {
             List<Request> result = new List<Request>();
-            
+   
             using (StreamReader r = new StreamReader(file))
             {
                 string json = r.ReadToEnd();
-                byte[] byteArray = Encoding.UTF8.GetBytes(json);
-                //byte[] byteArray = Encoding.ASCII.GetBytes(contents);
-                MemoryStream stream = new MemoryStream(byteArray);
-                // convert stream to string
 
-                JsonSerializer se = new JsonSerializer();
+                TempObj tempObj = new TempObj();
 
-                StreamReader re = new StreamReader(stream);
-                JsonTextReader reader = new JsonTextReader(re);
-                var DeserializedObject = se.Deserialize<Request>(reader);
-
-                Console.WriteLine(DeserializedObject.clientId);
-                //result = JsonConvert.DeserializeObject<List<Request>>(json);
+                JObject jObject = JObject.Parse(json);
+                IList<JToken> results = jObject["requests"].Children().ToList();
+                foreach (JToken jResult in results)
+                {
+                    Request request = jResult.ToObject<Request>();
+                    result.Add(request);
+                }
             }
 
             return result;
