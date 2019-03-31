@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HandleInput.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="ProgramOutput.cs" />
     <Compile Include="ReportController.cs" />
     <Compile Include="Request.cs" />

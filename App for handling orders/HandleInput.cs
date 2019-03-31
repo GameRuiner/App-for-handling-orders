@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualBasic.FileIO;
 using System.Globalization;
-using System.Xml.Linq;
-using System.IO;
-using Newtonsoft.Json.Linq;
 
 
 namespace App_for_handling_orders
@@ -15,12 +11,13 @@ namespace App_for_handling_orders
         public string[] readFiles()
         {
             string result = Console.ReadLine();
-            return result.Split(' ');
+            return result.Trim().Split(null);
         }
 
         public List<Request> ParseFiles(string[] files )
         {
             List<Request> result = new List<Request>();
+            Parser parser = new Parser();
 
             foreach (string file in files)
             {
@@ -31,25 +28,25 @@ namespace App_for_handling_orders
                     switch(format)
                     {
                         case "csv":
-                            result.AddRange(CSVParse(file));
+                            result.AddRange(parser.CSVParse(file));
                             break;
 
                         case "xml":
-                            result.AddRange(XMLParse(file));
+                            result.AddRange(parser.XMLParse(file));
                             break;
 
                         case "json":
-                            result.AddRange(JSONParse(file));
+                            result.AddRange(parser.JSONParse(file));
                             break;
 
                         default:
-                            throw new Exception("nie prawidłowy format " + format + " ");
+                            throw new Exception("Nie prawidłowy format " + format + " ");
 
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    Console.WriteLine("Błąd w formacie pliku " +  " " + e);
+                    Console.WriteLine("Błąd w formacie pliku " +  " " + file);
                 }
             }
             return result;
@@ -102,13 +99,11 @@ namespace App_for_handling_orders
                         Console.WriteLine(reportController.AverageClientWorth(id));
                         break;
                     case "i":
-                        reportController.Sort(sort);
                         reportController.QuantityByName();
                         break;
                     case "j":
                         Console.WriteLine("Podaj id klienta");
                         id = Console.ReadLine();
-                        reportController.Sort(sort);
                         reportController.ClientQuantityByName(id);
                         break;
                     case "k":
@@ -116,11 +111,11 @@ namespace App_for_handling_orders
                         double bottom = Double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
                         Console.WriteLine("Najwyższa cena");
                         double top = Double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
-                        reportController.Sort(sort);
                         reportController.RequestInSection(bottom, top);
                         break;
                     case "l":
                         sort = NewSort(sort);
+                        reportController.Sort(sort);
                         break;
                         
                 }
@@ -164,96 +159,6 @@ namespace App_for_handling_orders
 
             return result;
         }
-
-        class TempObj
-        {
-            List<Request> requests { get; set; }
-        }
-
-        public List<Request> JSONParse(string file)
-        {
-            List<Request> result = new List<Request>();
-            try
-            {
-                using (StreamReader r = new StreamReader(file))
-                {
-                    string json = r.ReadToEnd();
-
-                    TempObj tempObj = new TempObj();
-
-                    JObject jObject = JObject.Parse(json);
-                    IList<JToken> results = jObject["requests"].Children().ToList();
-                    foreach (JToken jResult in results)
-                    {
-                        Request request = jResult.ToObject<Request>();
-                        result.Add(request);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Błąd w formacie danych w pliku " + file + " " + e.Message);
-            }
-
-            return result;
-        }
-
-        public List<Request> XMLParse(string file)
-        {
-            List<Request> result = new List<Request>();
-            XDocument doc = XDocument.Load(file);
-
-            foreach (XElement el in doc.Root.Elements())
-            {
-                try
-                {
-                    string ClientId = el.Element("clientId").Value;
-                    long RequestId = long.Parse(el.Element("requestId").Value);
-                    string Name = el.Element("name").Value;
-                    int Quantity = int.Parse(el.Element("quantity").Value);
-                    double Price = Double.Parse(el.Element("price").Value, CultureInfo.InvariantCulture);
-                    Request request = new Request(ClientId, RequestId, Name, Quantity, Price);
-                    result.Add(request);
-
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Błąd w formacie danych w pliku " + file + " " + e.Message);
-                }
-            }
-            return result;
-        }
-
-        public List<Request> CSVParse(string file)
-        {
-            List<Request> result = new List<Request>(); 
-            TextFieldParser parser = new TextFieldParser(file);
-            parser.TextFieldType = FieldType.Delimited;
-            parser.SetDelimiters(",");
-            while (!parser.EndOfData)
-            {
-                
-                string[] fields = parser.ReadFields();
-                if (fields[0] == "Client_Id")
-                    continue;
-
-                try
-                    {
-                        string ClientId = fields[0];
-                        long RequestId = long.Parse(fields[1]);
-                        string Name = fields[2];
-                        int Quantity = int.Parse(fields[3]);
-                        double Price = Double.Parse(fields[4], CultureInfo.InvariantCulture);
-                        Request request = new Request(ClientId, RequestId, Name, Quantity, Price);
-                        result.Add(request);
-
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Błąd w formacie danych w pliku " + e.Message);
-                    }
-            }
-            return result;
-            }
+        
     }
 }

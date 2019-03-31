@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace App_for_handling_orders
 {
-    class ReportController
+    public class ReportController
     {
         List<Request> memoryDB;
 
@@ -36,12 +36,12 @@ namespace App_for_handling_orders
             this.memoryDB = memoryDB;
         }
 
-        internal int RequestQuantity()
+        public int RequestQuantity()
         {
             return memoryDB.Count;
         }
 
-        internal int ClientRequestQuantity(string id)
+        public int ClientRequestQuantity(string id)
         {
             var selectedRequest = from Request r in memoryDB 
                                   where r.clientId == id 
@@ -49,7 +49,7 @@ namespace App_for_handling_orders
             return selectedRequest.Count();
         }
 
-        internal double SumOfRequests()
+        public double SumOfRequests()
         {
             double result = 0;
             foreach (Request r in memoryDB) {
@@ -58,7 +58,7 @@ namespace App_for_handling_orders
             return result;
         }
 
-        internal double SumOfClientRequests(string id)
+        public double SumOfClientRequests(string id)
         {
             double result = 0;
             var clientR = from Request r in memoryDB
@@ -71,17 +71,17 @@ namespace App_for_handling_orders
             return result;
         }
 
-        internal double AverageWorth()
+        public double AverageWorth()
         {
             return SumOfRequests() / RequestQuantity();
         }
 
-        internal double AverageClientWorth(string id)
+        public double AverageClientWorth(string id)
         {
             return SumOfClientRequests(id) / ClientRequestQuantity(id);
         }
 
-        internal void QuantityByName()
+        public Dictionary<string, int> QuantityByName()
         {
             Dictionary<string, int> quantitityByName = new Dictionary<string, int>();
             foreach (Request r in memoryDB)
@@ -98,9 +98,11 @@ namespace App_for_handling_orders
             {
                 Console.WriteLine(name.Key + " " + name.Value);
             }
+
+            return quantitityByName;
         }
 
-        internal void ClientQuantityByName(string id)
+        public Dictionary<string, int> ClientQuantityByName(string id)
         {
             var requests = from r in memoryDB
                            where r.clientId == id
@@ -124,9 +126,10 @@ namespace App_for_handling_orders
                 Console.WriteLine(name.Key + " " + name.Value);
             }
 
+            return quantitityByName;
         }
 
-        internal void RequestInSection(double bottom, double top)
+        public Request RequestInSection(double bottom, double top)
         {
             var requests = from r in memoryDB
                           where (r.price * r.quantity) >= bottom &&
@@ -137,6 +140,8 @@ namespace App_for_handling_orders
                 Console.WriteLine("KlientID ZapytId Nazwa Ilość Cena");
                 Console.WriteLine(r.clientId + " " + r.requestId + " " + r.name + " " + r.quantity + " " + r.price);
             }
+
+            return requests.First();
         }
     }
 }
